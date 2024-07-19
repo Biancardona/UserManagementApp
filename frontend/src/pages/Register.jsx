@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Alert from '../components/layout/Alert';
 import axiosClient from '../config/axios';
 
@@ -10,6 +10,8 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setconfirmPassword] = useState('');
   const [alerta, setAlerta] = useState({});
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +43,7 @@ const Register = () => {
         password,
       });
       setAlerta({
-        msg: 'User created correctly, check your email to confirm account',
+        msg: 'User created correctly',
         error: false,
       });
       setName('');
@@ -49,6 +51,7 @@ const Register = () => {
       setPosition('');
       setPassword('');
       setconfirmPassword('');
+      navigate('/');
     } catch (error) {
       setAlerta({
         msg: error.response.data.msg,

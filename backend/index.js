@@ -9,7 +9,7 @@ dotenv.config();
 app.use(express.json());
 
 conectDB()
-const allowedDomains = [process.env.FRONTEND_URL];
+const allowedDomains = [process.env.FRONTEND_URL] || 'http://localhost:3000';
 const corsOptions = {
     origin: function (origin, callback) {
         if (allowedDomains.indexOf(origin) !== -1 || !origin) {

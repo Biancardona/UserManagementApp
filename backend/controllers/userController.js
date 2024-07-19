@@ -1,27 +1,33 @@
 import Users from "../model/Users.js";
 import idGenerator from "../helpers/idGenerator.js";
 import generateJWT from "../helpers/generateJWT.js";
-import emailRegister from "../helpers/emailRegister.js";
 
 const register = async (req, res) => {
 
-    const { name, email } = req.body;
+    const { name, email, position, password } = req.body;
     const userEmailExist = await Users.findOne({ email: email });
     if (userEmailExist) {
         const error = new Error("Email already exists");
         return res.status(400).json({ msg: error.message });
     }
     try {
-        const user = new Users(req.body);
+        const user = new Users({
+            name,
+            email,
+            position,
+            password,
+            token: idGenerator(),
+            confirmed: true
+        });;
 
         const userObject = await user.save();
 
-        emailRegister({
-            name,
-            email,
-            token: userObject.token,
+        res.json({
+            _id: userObject._id,
+            name: userObject.name,
+            email: userObject.email,
+            token: generateJWT(userObject._id),
         });
-        res.json(userObject);
     } catch (error) {
         console.log(error)
     }
@@ -75,10 +81,7 @@ const auth = async (req, res) => {
     if (emailExist.blocked) {
         return res.status(403).json({ msg: "User is blocked" });
     }
-    if (!emailExist.confirmed) {
-        const error = new Error("Email not autenticated");
-        return res.status(403).json({ msg: error.message });
-    }
+
     if (await emailExist.comparedPasswords(password)) {
 
         res.json({
