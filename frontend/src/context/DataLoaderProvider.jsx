@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosClient from '../config/axios';
 import useAuth from '../hooks/useAuth';
 
@@ -6,7 +7,7 @@ const DataContext = createContext();
 
 const DataLoaderProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
-
+  const navigate = useNavigate();
   const { auth } = useAuth();
 
   useEffect(() => {
@@ -29,6 +30,27 @@ const DataLoaderProvider = ({ children }) => {
     getUsers();
   }, [auth]);
 
+  const refreshUsers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axiosClient.get('/users/admin', config);
+      setUsers(data);
+
+      // Check if all users are blocked and redirect to login if true
+      if (data.every((user) => user.status === 'blocked')) {
+        navigate('/');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const deleteUser = async (id) => {
     const deleteMessage = window.confirm('Delete User?');
     if (deleteMessage) {
@@ -43,6 +65,9 @@ const DataLoaderProvider = ({ children }) => {
         const { data } = await axiosClient.delete(`/users/admin/${id}`, config);
         const updatedUsers = users.filter((elem) => elem._id !== id);
         setUsers(updatedUsers);
+        if (data.every((user) => user.status === 'blocked')) {
+          navigate('/');
+        }
         console.log(data);
       } catch (error) {
         console.log(error.response);
@@ -77,6 +102,10 @@ const DataLoaderProvider = ({ children }) => {
       );
       console.log('Updated users:', updatedUsers);
       setUsers(updatedUsers);
+      // Check if all users are blocked and redirect to login if true
+      if (data.every((user) => user.status === 'blocked')) {
+        navigate('/');
+      }
     } catch (error) {
       console.log(error.response);
     }
@@ -109,6 +138,9 @@ const DataLoaderProvider = ({ children }) => {
       );
       console.log('Updated users:', updatedUsers);
       setUsers(updatedUsers);
+      if (data.every((user) => user.status === 'blocked')) {
+        navigate('/');
+      }
     } catch (error) {
       console.log(error.response);
     }
@@ -118,6 +150,7 @@ const DataLoaderProvider = ({ children }) => {
       value={{
         users,
         setUsers,
+        refreshUsers,
         deleteUser,
         inactivateUser,
         unblockUser,

@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import User from './User';
 
 const UsersList = () => {
-  const { users, deleteUser, inactivateUser, unblockUser } = useDataLoader();
+  const { users, refreshUsers, deleteUser, inactivateUser, unblockUser } =
+    useDataLoader();
   const { signOut } = useAuth();
   const [selectAll, setSelectAll] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -31,6 +32,7 @@ const UsersList = () => {
       await deleteUser(userId);
     }
     setSelectedUsers([]);
+    refreshUsers();
   };
 
   const handleBlockUsers = async () => {
@@ -38,6 +40,7 @@ const UsersList = () => {
       await inactivateUser(userId);
     }
     setSelectedUsers([]);
+    refreshUsers();
   };
 
   const handleUnblockUsers = async () => {
@@ -45,6 +48,7 @@ const UsersList = () => {
       await unblockUser(userId);
     }
     setSelectedUsers([]);
+    refreshUsers();
   };
 
   return (
