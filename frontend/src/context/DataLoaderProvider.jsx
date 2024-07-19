@@ -45,7 +45,7 @@ const DataLoaderProvider = ({ children }) => {
         setUsers(updatedUsers);
         console.log(data);
       } catch (error) {
-        console.log(error.response.data);
+        console.log(error.response);
       }
     }
   };
@@ -78,7 +78,7 @@ const DataLoaderProvider = ({ children }) => {
       console.log('Updated users:', updatedUsers);
       setUsers(updatedUsers);
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error.response);
     }
   };
   const unblockUser = async (id) => {
@@ -110,7 +110,7 @@ const DataLoaderProvider = ({ children }) => {
       console.log('Updated users:', updatedUsers);
       setUsers(updatedUsers);
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error.response);
     }
   };
   return (

@@ -18,7 +18,6 @@ const register = async (req, res) => {
 
         emailRegister({
             name,
-            position,
             email,
             token: userObject.token,
         });
